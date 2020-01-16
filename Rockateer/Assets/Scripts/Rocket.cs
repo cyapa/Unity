@@ -19,6 +19,9 @@ public class Rocket : MonoBehaviour
     Rigidbody rocketRigid;
     AudioSource rocketAudio;
 
+    enum State  {Live,Dead,Completed}
+    State state = State.Live;
+
     Scene currentScene;
 
     // Start is called before the first frame update
@@ -32,13 +35,18 @@ public class Rocket : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (state != State.Live)
+            return;
+
         switch (collision.gameObject.tag)
         {
             case "enemy":
-                SceneManager.LoadScene(currentScene.buildIndex);
+                state = State.Dead;
+                Invoke("RestartLevel",2f);
                 break;
             case "finish":
-                LoadNextLevel();
+                state = State.Completed;
+                Invoke("LoadNextLevel", 2f);
                 break;
             default:
                 print("Not implemented");
@@ -48,11 +56,19 @@ public class Rocket : MonoBehaviour
         }
     }
 
+    private void RestartLevel()
+    {
+        SceneManager.LoadScene(currentScene.buildIndex);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate();
+        if(state == State.Live)
+        {
+            Thrust();
+            Rotate();
+        } 
     }
 
 
