@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class Rocket : MonoBehaviour
 {
 
@@ -18,11 +18,15 @@ public class Rocket : MonoBehaviour
 
     Rigidbody rocketRigid;
     AudioSource rocketAudio;
+
+    Scene currentScene;
+
     // Start is called before the first frame update
     void Start()
     {
         rocketRigid = GetComponent<Rigidbody>();
         rocketAudio = GetComponent<AudioSource>();
+        currentScene = SceneManager.GetActiveScene();
     }
 
 
@@ -30,8 +34,11 @@ public class Rocket : MonoBehaviour
     {
         switch (collision.gameObject.tag)
         {
-            case "friendly":
-                print("Friend");
+            case "enemy":
+                SceneManager.LoadScene(currentScene.buildIndex);
+                break;
+            case "finish":
+                LoadNextLevel();
                 break;
             default:
                 print("Not implemented");
@@ -48,6 +55,17 @@ public class Rocket : MonoBehaviour
         Rotate();
     }
 
+
+    void LoadNextLevel()
+    {
+        int nextLvlIdx = currentScene.buildIndex + 1;
+        if (SceneManager.sceneCountInBuildSettings > nextLvlIdx)
+            SceneManager.LoadScene(nextLvlIdx);
+        else
+            print("No level scene found!");
+
+
+    }
     private void Rotate()
     {
         float rotationSpeed = Time.deltaTime * rotationTrust;
