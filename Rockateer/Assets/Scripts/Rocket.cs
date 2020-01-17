@@ -6,12 +6,16 @@ using UnityEngine.SceneManagement;
 public class Rocket : MonoBehaviour
 {
 
-    [SerializeField]
-    public float rotationTrust = 100f;
+    [SerializeField] float rotationTrust = 100f;
+    [SerializeField] float thrust = 100f;
 
-    [SerializeField]
-    public float thrust = 100f;
+    [SerializeField] AudioClip rocketEngineSound;
+    [SerializeField] AudioClip deathSound;
+    [SerializeField] AudioClip completeSound;
 
+    [SerializeField] ParticleSystem engineParticle;
+    [SerializeField] ParticleSystem deathParticle;
+    [SerializeField] ParticleSystem completedParticle;
 
     const float MAX_THRUST = 150f;
     const float MIN_THRUST = 40f;
@@ -19,7 +23,7 @@ public class Rocket : MonoBehaviour
     Rigidbody rocketRigid;
     AudioSource rocketAudio;
 
-    enum State  {Live,Dead,Completed}
+    enum State { Live, Dead, Completed }
     State state = State.Live;
 
     Scene currentScene;
@@ -41,10 +45,16 @@ public class Rocket : MonoBehaviour
         switch (collision.gameObject.tag)
         {
             case "enemy":
+                deathParticle.Play();
+                rocketAudio.Stop();
+                PlaySound(deathSound);
                 state = State.Dead;
-                Invoke("RestartLevel",2f);
+                Invoke("RestartLevel", 2f);
                 break;
             case "finish":
+                completedParticle.Play();
+                rocketAudio.Stop();
+                PlaySound(completeSound);
                 state = State.Completed;
                 Invoke("LoadNextLevel", 2f);
                 break;
@@ -64,11 +74,11 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(state == State.Live)
+        if (state == State.Live)
         {
             Thrust();
             Rotate();
-        } 
+        }
     }
 
 
@@ -101,17 +111,27 @@ public class Rocket : MonoBehaviour
         float thrustSpeed = Time.deltaTime * thrust;
         if (Input.GetKey(KeyCode.Space))
         {
-            rocketRigid.AddRelativeForce(Vector3.up* thrustSpeed);
-            if (!rocketAudio.isPlaying)
-                rocketAudio.Play();
+            engineParticle.Play();
+            rocketRigid.AddRelativeForce(Vector3.up * thrustSpeed);
+            PlaySound(rocketEngineSound);
+            
             if (MAX_THRUST > thrust)
                 thrust++;
         }
         else
         {
+            engineParticle.Stop();
             rocketAudio.Stop();
             thrust = MIN_THRUST;
         }
-           
+
+    }
+
+    private void PlaySound(AudioClip soundClip)
+    {
+       
+        if (!rocketAudio.isPlaying)
+            rocketAudio.PlayOneShot(soundClip);
+
     }
 }
