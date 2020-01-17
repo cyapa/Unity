@@ -45,6 +45,7 @@ public class Rocket : MonoBehaviour
         switch (collision.gameObject.tag)
         {
             case "enemy":
+                engineParticle.Stop();
                 deathParticle.Play();
                 rocketAudio.Stop();
                 PlaySound(deathSound);
