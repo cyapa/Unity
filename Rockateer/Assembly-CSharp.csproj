@@ -63,6 +63,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Bomb.cs" />
+    <Compile Include="Assets\Scripts\Ocsillator.cs" />
     <Compile Include="Assets\Scripts\Rocket.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/CODE/Unity/Rockateer/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
