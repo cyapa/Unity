@@ -24,6 +24,8 @@ public class Ocsillator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(period <= Mathf.Epsilon) { return; }
+
         float cycles = Time.time / period;
         float rawSinWave = Mathf.Sin(cycles * tau);
 
